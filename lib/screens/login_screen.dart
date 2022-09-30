@@ -3,6 +3,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:immence_app/screens/homeScree.dart';
 import 'package:immence_app/screens/profile_screen.dart';
 import 'package:immence_app/screens/signup_screen.dart';
 import 'package:immence_app/screens/user_screen.dart';
@@ -90,7 +91,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Text('Has Some Error'),
                 );
               } else if (snapshot.hasData) {
-                return const ProfileScreen();
+                return const HomeScreen();
               } else {
                 return SingleChildScrollView(
                     child: GestureDetector(

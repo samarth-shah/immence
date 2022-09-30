@@ -1,8 +1,13 @@
 // ignore_for_file: library_private_types_in_public_api, avoid_print, use_build_context_synchronously
 
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:immence_app/component/signUpData.dart';
+import 'package:immence_app/screens/homeScree.dart';
 import 'package:immence_app/screens/login_screen.dart';
 import 'package:immence_app/screens/profile_screen.dart';
 
@@ -24,9 +29,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool? checkBoxValue = false;
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
+  /* final db = FirebaseFirestore.instance;
+  late StreamSubscription sub;
+  late Map data; */
+
   @override
   void initState() {
     super.initState();
+    /*  sub = db.collection('path').doc('id').snapshots().listen((snap) {
+      setState(() {
+        data = snap.data()!;
+      });
+    }); */
     email = TextEditingController();
     password = TextEditingController();
     name = TextEditingController();
@@ -39,6 +53,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     password?.dispose();
     name?.dispose();
     phoneNumber?.dispose();
+    // sub.cancel();
     super.dispose();
   }
 
@@ -62,6 +77,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
 
     Navigator.pop(context);
+  }
+
+  Future createUser(SignUpData user) async {
+    final docUser = FirebaseFirestore.instance.collection('user').doc();
+
+    final json = user.toJson();
+    await docUser.set(json);
   }
 
   @override
@@ -88,7 +110,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               stream: FirebaseAuth.instance.authStateChanges(),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  return const ProfileScreen();
+                  return const HomeScreen();
                 } else {
                   return GestureDetector(
                     onTap: () => FocusScope.of(context).unfocus(),
@@ -358,9 +380,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     10, 20, 10, 10),
                                 child: ElevatedButton(
                                   onPressed: () {
-                                    print(
-                                        '${email!.text} and ${password!.text}');
                                     signUp();
+                                    final user = SignUpData(
+                                      email: email!.text,
+                                      name: name!.text,
+                                      password: password!.text,
+                                      phoneNumber: phoneNumber!.text,
+                                    );
+
+                                    createUser(user);
+
                                     email!.clear();
                                     password!.clear();
                                     name!.clear();
