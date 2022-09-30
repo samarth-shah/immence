@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
         title: 'Immence',
         scaffoldMessengerKey: Utils.messengerKey,
         debugShowCheckedModeBanner: false,
-        home: const LoginScreen(),
+        home: const SigninScreen(),
       ),
     );
   }

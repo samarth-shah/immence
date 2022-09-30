@@ -3,13 +3,13 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:immence_app/component/signUpData.dart';
 import 'package:immence_app/screens/homeScree.dart';
 import 'package:immence_app/screens/login_screen.dart';
-import 'package:immence_app/screens/profile_screen.dart';
 
 import '../component/utils.dart';
 
@@ -28,19 +28,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool passwordVisibility = false;
   bool? checkBoxValue = false;
   final scaffoldKey = GlobalKey<ScaffoldState>();
-
-  /* final db = FirebaseFirestore.instance;
-  late StreamSubscription sub;
-  late Map data; */
+  final formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
-    /*  sub = db.collection('path').doc('id').snapshots().listen((snap) {
-      setState(() {
-        data = snap.data()!;
-      });
-    }); */
     email = TextEditingController();
     password = TextEditingController();
     name = TextEditingController();
@@ -53,11 +45,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
     password?.dispose();
     name?.dispose();
     phoneNumber?.dispose();
-    // sub.cancel();
     super.dispose();
   }
 
   Future signUp() async {
+    final isValid = formKey.currentState!.validate();
+    if (!isValid) {
+      return;
+    }
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -75,7 +71,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
       print(e);
       Utils.showSnackBar(e.message);
     }
-
     Navigator.pop(context);
   }
 
@@ -112,12 +107,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 if (snapshot.hasData) {
                   return const HomeScreen();
                 } else {
-                  return GestureDetector(
-                    onTap: () => FocusScope.of(context).unfocus(),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Form(
+                        key: formKey,
+                        child: Column(
                           children: [
                             Padding(
                               padding: const EdgeInsetsDirectional.fromSTEB(
@@ -158,8 +153,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   ),
                                 ),
                                 Padding(
-                                  padding: const EdgeInsetsDirectional.fromSTEB(
-                                      10, 10, 10, 0),
+                                  padding:
+                                      const EdgeInsetsDirectional.fromSTEB(
+                                          10, 10, 10, 0),
                                   child: TextFormField(
                                     controller: name,
                                     obscureText: false,
@@ -174,7 +170,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                           color: Colors.grey,
                                           width: 1,
                                         ),
-                                        borderRadius: BorderRadius.circular(10),
+                                        borderRadius:
+                                            BorderRadius.circular(10),
                                       ),
                                     ),
                                     style: const TextStyle(
@@ -205,11 +202,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   ),
                                 ),
                                 Padding(
-                                  padding: const EdgeInsetsDirectional.fromSTEB(
-                                      10, 10, 10, 0),
+                                  padding:
+                                      const EdgeInsetsDirectional.fromSTEB(
+                                          10, 10, 10, 0),
                                   child: TextFormField(
                                     controller: email,
                                     obscureText: false,
+                                    autovalidateMode:
+                                        AutovalidateMode.onUserInteraction,
+                                    validator: (email) => (email != null &&
+                                            !EmailValidator.validate(email))
+                                        ? 'Enter a valid email'
+                                        : null,
                                     decoration: InputDecoration(
                                       hintText: 'Enter your email',
                                       hintStyle: const TextStyle(
@@ -221,7 +225,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                           color: Colors.grey,
                                           width: 1,
                                         ),
-                                        borderRadius: BorderRadius.circular(10),
+                                        borderRadius:
+                                            BorderRadius.circular(10),
                                       ),
                                     ),
                                     style: const TextStyle(
@@ -252,8 +257,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   ),
                                 ),
                                 Padding(
-                                  padding: const EdgeInsetsDirectional.fromSTEB(
-                                      10, 10, 10, 0),
+                                  padding:
+                                      const EdgeInsetsDirectional.fromSTEB(
+                                          10, 10, 10, 0),
                                   child: TextFormField(
                                     controller: phoneNumber,
                                     obscureText: false,
@@ -268,7 +274,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                           color: Colors.grey,
                                           width: 1,
                                         ),
-                                        borderRadius: BorderRadius.circular(10),
+                                        borderRadius:
+                                            BorderRadius.circular(10),
                                       ),
                                     ),
                                     style: const TextStyle(
@@ -299,11 +306,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   ),
                                 ),
                                 Padding(
-                                  padding: const EdgeInsetsDirectional.fromSTEB(
-                                      10, 10, 10, 0),
+                                  padding:
+                                      const EdgeInsetsDirectional.fromSTEB(
+                                          10, 10, 10, 0),
                                   child: TextFormField(
                                     controller: password,
                                     obscureText: passwordVisibility,
+                                    autovalidateMode:
+                                        AutovalidateMode.onUserInteraction,
+                                    validator: (value) =>
+                                        (value != null && value.length < 6)
+                                            ? 'Enter min. 6 characters'
+                                            : null,
                                     decoration: InputDecoration(
                                       hintText: 'Please Enter Your Password',
                                       hintStyle: const TextStyle(
@@ -316,7 +330,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                           color: Colors.grey,
                                           width: 1,
                                         ),
-                                        borderRadius: BorderRadius.circular(10),
+                                        borderRadius:
+                                            BorderRadius.circular(10),
                                       ),
                                       suffixIcon: GestureDetector(
                                         onTap: () {
@@ -380,7 +395,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     10, 20, 10, 10),
                                 child: ElevatedButton(
                                   onPressed: () {
-                                    signUp();
                                     final user = SignUpData(
                                       email: email!.text,
                                       name: name!.text,
@@ -389,6 +403,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     );
 
                                     createUser(user);
+                                    signUp();
 
                                     email!.clear();
                                     password!.clear();
@@ -407,37 +422,38 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             ),
                           ],
                         ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                    builder: ((context) =>
-                                        const LoginScreen())));
-                          },
-                          child: Padding(
-                            padding: const EdgeInsetsDirectional.fromSTEB(
-                                10, 70, 10, 10),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: const [
-                                Text(
-                                  'Allready have an account ? ',
-                                  style: TextStyle(color: Colors.grey),
-                                ),
-                                Text(
-                                  ' Login',
-                                  style: TextStyle(
-                                    color: Colors.blue,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(
+                              builder: ((context) => const SigninScreen()),
                             ),
+                          );
+                        },
+                        child: Padding(
+                          padding: const EdgeInsetsDirectional.fromSTEB(
+                              10, 70, 10, 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: const [
+                              Text(
+                                'Allready have an account ? ',
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                              Text(
+                                ' Login',
+                                style: TextStyle(
+                                  color: Colors.blue,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
                           ),
-                        )
-                      ],
-                    ),
+                        ),
+                      )
+                    ],
                   );
                 }
               }),

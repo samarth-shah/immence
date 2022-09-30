@@ -4,22 +4,20 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:immence_app/screens/homeScree.dart';
-import 'package:immence_app/screens/profile_screen.dart';
 import 'package:immence_app/screens/signup_screen.dart';
-import 'package:immence_app/screens/user_screen.dart';
 
 import '../component/utils.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+class SigninScreen extends StatefulWidget {
+  const SigninScreen({Key? key}) : super(key: key);
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _SigninScreenState createState() => _SigninScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  TextEditingController? email;
-  TextEditingController? password;
+class _SigninScreenState extends State<SigninScreen> {
+  TextEditingController? emailTextEditingController;
+  TextEditingController? passwordTextEditingController;
   bool passwordVisibility = true;
   bool? checkBoxValue = false;
   final scaffoldKey = GlobalKey<ScaffoldState>();
@@ -27,14 +25,14 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    email = TextEditingController();
-    password = TextEditingController();
+    emailTextEditingController = TextEditingController();
+    passwordTextEditingController = TextEditingController();
   }
 
   @override
   void dispose() {
-    email?.dispose();
-    password?.dispose();
+    emailTextEditingController?.dispose();
+    passwordTextEditingController?.dispose();
     super.dispose();
   }
 
@@ -49,8 +47,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email!.text.trim(),
-        password: password!.text.trim(),
+        email: emailTextEditingController!.text.trim(),
+        password: passwordTextEditingController!.text.trim(),
       );
     } on FirebaseAuthException catch (e) {
       print(e);
@@ -143,7 +141,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 padding: const EdgeInsetsDirectional.fromSTEB(
                                     10, 10, 10, 0),
                                 child: TextFormField(
-                                  controller: email,
+                                  controller: emailTextEditingController,
                                   obscureText: false,
                                   decoration: InputDecoration(
                                     hintText: 'Please Enter Your Email',
@@ -191,7 +189,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 padding: const EdgeInsetsDirectional.fromSTEB(
                                     10, 10, 10, 0),
                                 child: TextFormField(
-                                  controller: password,
+                                  controller: passwordTextEditingController,
                                   obscureText: passwordVisibility,
                                   decoration: InputDecoration(
                                     hintText: 'Please Enter Your Password',
@@ -269,7 +267,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                   10, 20, 10, 10),
                               child: ElevatedButton(
                                 onPressed: () {
-                                  print('${email!.text} and ${password!.text}');
                                   signIn();
                                 },
                                 child: const Text(

@@ -1,3 +1,4 @@
+// ignore: file_names
 class SignUpData {
   final String name;
   final String email;
